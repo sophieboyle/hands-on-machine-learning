@@ -123,19 +123,5 @@ def main():
     print(f"Best SVR Estimator Score: {best_svr_score}")
     # NOTE: This results in a better score than that of the grid search
 
-    # TODO: Abstract the following section into its own function
-    # as it is clearly re-used among models.
-    # Examine the relative importance of each attribute for accurate predictions
-    feature_importances = rnd_search.best_estimator_.feature_importances_
-    # Displaying the importance scores next to their attribute names
-    extra_attribs = ["rooms_per_hhold", "pop_per_hhold", "bedrooms_per_room"]
-    cat_encoder = full_pipeline.named_transformers_["cat"]
-    cat_one_hot_attribs = list(cat_encoder.categories_[0])
-    attributes = num_attribs + extra_attribs + cat_one_hot_attribs
-    print(sorted(zip(feature_importances, attributes), reverse=True))
-    # NOTE: The above may indicate which features may be dropped
-    # This is the data we use to feed into our transformer the next run around
-
-
 if __name__=="__main__":
     main()

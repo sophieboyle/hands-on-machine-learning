@@ -1,4 +1,5 @@
 from sklearn.base import BaseEstimator, TransformerMixin
+from helper import top_importances
 import numpy as np
 
 rooms_ix, bedrooms_ix, population_ix, households_ix = 3, 4, 5, 6
@@ -27,15 +28,20 @@ class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
             return np.c_[X, rooms_per_household, population_per_household]
 
 """
-    Transformer class to only retain a given
-    list of important attributes in a dataframe.
+    Transformer class to only retain a given specific
+    number of most important features in data.
 """
-class SelectImportantAttributes(BaseEstimator, TransformerMixin):
-    def __init__(self, important_attribs):
-        self.important_attribs = important_attribs
+class SelectImportantFeatures(BaseEstimator, TransformerMixin):
+    def __init__(self, feature_importances, k):
+        self.feature_importances = feature_importances
+        self.k = k
     
     def fit(self, X):
+        # Get the indices of the top features
+        self.top_indices_ = top_importances(self.feature_importances, self.k)
         return self
     
     def transform(self, X):
-        pass
+        # Return the data with only the columns
+        # indicative of the top features
+        return X[:, self.top_indices_]

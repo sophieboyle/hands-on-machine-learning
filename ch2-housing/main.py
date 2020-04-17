@@ -1,6 +1,6 @@
 from data_handling import get_data, load_data, display_data, split_data, split_data_by_id, do_stratified_sampling, play_with_data
-from transformers import CombinedAttributesAdder
-from helper import display_scores
+from transformers import CombinedAttributesAdder, SelectImportantFeatures
+from helper import display_scores, top_importances
 
 import pandas as pd
 import numpy as np
@@ -204,23 +204,23 @@ def main():
                             loc=squared_errors.mean(),
                             scale=stats.sem(squared_errors)))
 
-    # Try a support vector machine regressor
-    param_grid = [
-            {'kernel': ['linear'], 'C': [10., 30., 100., 300., 1000., 3000., 10000., 30000.0]},
-            {'kernel': ['rbf'], 'C': [1.0, 3.0, 10., 30., 100., 300., 1000.0],
-             'gamma': [0.01, 0.03, 0.1, 0.3, 1.0, 3.0]},
-        ]
-    
-    svr_reg = SVR()
-    grid_search = GridSearchCV(svr_reg, param_grid, cv=5,
-                                scoring="neg_mean_squared_error",
-                                return_train_score=True)
-    grid_search.fit(housing_prepared, housing_labels)
-    
-    # Best svr score
-    best_svr_score = np.sqrt(-grid_search.best_score_)
-    print(f"Best SVR Estimator Score: {best_svr_score}") 
+    # The following is inserted into our SelectImportantFeatures'
+    # fit method, however we add it here for testing later.
+    top_k_feature_indices = top_importances(feature_importances, 5)
 
+    # New pipeline, now reducing the data's features to be
+    # restricted to the top 5 most important features
+    prep_and_feature_pipeline = Pipeline([
+        ("prep", full_pipeline),
+        ("feature", SelectImportantFeatures(feature_importances, 5))
+    ])
+
+    trimmed_housing = prep_and_feature_pipeline.fit_transform(housing)
+    # NOTE: If we were to do trimmed_housing[0:3] and 
+    # housing_prepared[0:3, top_k_feature_indices],
+    # the output would be the same.
+    print(trimmed_housing[0:3])
+    print(housing_prepared[0:3, top_k_feature_indices])
 
 if __name__=="__main__":
     main()
