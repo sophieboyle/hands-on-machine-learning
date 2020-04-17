@@ -204,6 +204,10 @@ def main():
                             loc=squared_errors.mean(),
                             scale=stats.sem(squared_errors)))
 
+    # The following is inserted into our SelectImportantFeatures'
+    # fit method, however we add it here for testing later.
+    top_k_feature_indices = top_importances(feature_importances, 5)
+
     # New pipeline, now reducing the data's features to be
     # restricted to the top 5 most important features
     prep_and_feature_pipeline = Pipeline([
@@ -212,9 +216,11 @@ def main():
     ])
 
     trimmed_housing = prep_and_feature_pipeline.fit_transform(housing)
+    # NOTE: If we were to do trimmed_housing[0:3] and 
+    # housing_prepared[0:3, top_k_feature_indices],
+    # the output would be the same.
     print(trimmed_housing[0:3])
-    top_k_feature_indices = top_importances(feature_importances, 5)
-    print(trimmed_housing[0:3, top_k_feature_indices])
+    print(housing_prepared[0:3, top_k_feature_indices])
 
 if __name__=="__main__":
     main()
