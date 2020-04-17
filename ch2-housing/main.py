@@ -222,5 +222,21 @@ def main():
     print(trimmed_housing[0:3])
     print(housing_prepared[0:3, top_k_feature_indices])
 
+    # End pipeline including preparation, feature selection,
+    # and prediction using the RandomForestReg.
+    prep_feat_predict_pipeline = Pipeline([
+        ("prep", full_pipeline),
+        ("feature", SelectImportantFeatures(feature_importances, 5)),
+        ("forest_reg", RandomForestRegressor(**grid_search.best_params_))
+    ])
+
+    prep_feat_predict_pipeline.fit(housing, housing_labels)
+
+    # Test the pipeline
+    some_data = housing.iloc[:5]
+    some_labels = housing_labels.iloc[:5]
+    print(f"Predictions: {prep_feat_predict_pipeline.predict(some_data)}")
+    print(f"Labels: {some_labels}")
+
 if __name__=="__main__":
     main()

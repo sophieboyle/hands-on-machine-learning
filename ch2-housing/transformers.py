@@ -1,4 +1,5 @@
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.preprocessing import LabelBinarizer
 from helper import top_importances
 import numpy as np
 
@@ -17,7 +18,7 @@ class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         return self
     
-    def transform(self, X):
+    def transform(self, X, y=None):
         rooms_per_household = X[:, rooms_ix] / X[:, households_ix]
         population_per_household = X[:, population_ix] / X[:, households_ix]
         if self.add_bedrooms_per_room:
