@@ -7,6 +7,8 @@ from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, precision_recall_curve, roc_curve, roc_auc_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.preprocessing import StandardScaler
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
@@ -137,6 +139,36 @@ def main():
     # On top of that, the Random Forest's ROC AUC is much better
     print(f"RANDOMFORESTCLASSIFIER'S ROC AUC: {roc_auc_score(y_train_5, y_scores_forest)}")
 
+    # Use a SupportVectorMachine for multiclass classification
+    # Scikit-learn automatically chooses whether to use
+    # OvR or OVO (In this case it uses OvO)
+    svm_clf = SVC()
+    svm_clf.fit(X_train, y_train)
+    print(svm_clf.predict([X[0]]))
+    # The decision function shows that 10 scores are returned
+    # per instance, indicating the score for each possible class
+    print(f"MULTICLASS SVC SCORES ON X[0]: {svm_clf.decision_function([X[0]])}")
+
+    # We can manually force scikit-learn to use OvR or OvO
+    ovr_clf = OneVsRestClassifier(SVC())
+    ovr_clf.fit(X_train, y_train)
+    print(f"OVR CLASSIFIER PREDICTION ON X[0]: {ovr_clf.predict([X[0]])}")
+
+    # We can train an SGDClassifier for Multiclass Classification
+    # NOTE: SGD does not use OvR/OvO, as it can directly classify instances
+    # into multiple classes.
+    sgd_clf.fit(X_train, y_train)
+    print(f"SGD_CLF MULTICLASS PREDICTION ON X[0]: {sgd_clf.predict([X[0]])}")
+
+    # Evaluating the SGD multiclass classifier using cross validation
+    sgd_clf_cv_score = cross_val_score(sgd_clf, X_train, y_train, cv=3, scoring="accuracy")
+    print(f"CROSS VAL SCORE ON SGD_CLF: {sgd_clf_cv_score}")
+
+    # Scaling the inputs increases accuracy
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train.astype(np.float64))
+    sgd_clf_cv_score_scaled = cross_val_score(sgd_clf, X_train_scaled, y_train, cv=3, scoring="accuracy")
+    print(f"CROSS VAL SCORE ON SGD_CLF SCALED INPUT: {sgd_clf_cv_score}")
 
 if __name__=="__main__":
     main()
