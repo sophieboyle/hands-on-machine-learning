@@ -170,5 +170,30 @@ def main():
     sgd_clf_cv_score_scaled = cross_val_score(sgd_clf, X_train_scaled, y_train, cv=3, scoring="accuracy")
     print(f"CROSS VAL SCORE ON SGD_CLF SCALED INPUT: {sgd_clf_cv_score}")
 
+    # NOTE: Usually we should explore data preparation options, 
+    # different models, fine-tuning hyperparams, and automation
+    # For the sake of the exercise we assume that a good model has been found
+    
+    # We look at the confusion matrix of sgd_clf with scaled inputs
+    y_train_pred = cross_val_predict(sgd_clf, X_train_scaled, y_train, cv=3)
+    conf_mx = confusion_matrix(y_train, y_train_pred)
+    # Instead of purely viewing the numbers, we can show the matrix
+    # in image form
+    plt.matshow(conf_mx, cmap=plt.cm.gray)
+    # If most images are along the main diagonal, this shows correct
+    # classification. We can see which particular classes are correctly
+    # classified less often if they are darker than the others. It may
+    # also be the case that there are not enough of that class in the data
+    plt.show()
+
+    # To get a representation of error rates, we divide each of the
+    # conf matrix's values by the number of instances in the class
+    row_sums = conf_mx.sum(axis=1, keepdims=True)
+    norm_conf_mx = conf_mx / row_sums
+    # Diagonal is filled with zeros to keep only errors
+    np.fill_diagonal(norm_conf_mx, 0)
+    plt.matshow(norm_conf_mx, cmap=plt.cm.gray)
+    plt.show()
+
 if __name__=="__main__":
     main()
