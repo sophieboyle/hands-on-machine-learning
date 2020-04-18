@@ -1,10 +1,14 @@
 from data import get, view_example
-from helper import plot_precision_recall_vs_threshold
+from helper import plot_precision_recall_vs_threshold, plot_roc_curve
 import os
 import numpy as np
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import cross_val_score, cross_val_predict
-from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, precision_recall_curve
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, precision_recall_curve, roc_curve, roc_auc_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 def main():
     mnist = get()
@@ -92,7 +96,47 @@ def main():
     print(precision_score(y_train_5, y_train_pred_90))
     print(recall_score(y_train_5, y_train_pred_90))
 
-    
+    # The ROC CURVE plots sensitivity (recall) verus 1 - specificity
+    # Where Sensitivity is the True Positive Rate (TPR)
+    # Specificity is the True Negative Rate (TNR)
+    # Therefore the False Positive Rate (FPR) = 1 - TNR
+    fpr, tpr, thresholds = roc_curve(y_train_5, y_scores)
+    plot_roc_curve(fpr, tpr)
+    # We can find the area under the curve
+    # Where a perfect classifier has AUC = 1
+    # And a purely random classifier has AUC = 0.5
+    print(f"ROC AUC SCORE: {roc_auc_score(y_train_5, y_scores)}")
+
+    # Choose the PR Curve over the ROC curve only when the
+    # positive class is rare, or when you care more about
+    # minimising false positives over false negatives.
+    # NOTE: In this case, since the positive class (getting a 5)
+    # is rare, we opt to refer to the PR Curve.
+
+    # We will now train a RandomForestClassifier and compare
+    # ROC Curves and ROC AUC scores.
+    forest_clf = RandomForestClassifier(random_state=42)
+    # Seeing as there is no decision_function for RFC,
+    # we use predict_proba which gives an array containing probabilities
+    # as to whether an instance belongs to a given class
+    y_probas_forest = cross_val_predict(forest_clf, X_train,
+                                        y_train, cv=3,
+                                        method="predict_proba")
+
+    # We get the probabilities of getting the positive class
+    y_scores_forest = y_probas_forest[:, 1]
+    # We can give the roc_curve probabilities instead of scores
+    fpr_forest, tpr_forest, thresholds_forest = roc_curve(y_train_5, y_scores_forest)
+
+    # Plotting the SGD and Random Forest together show that
+    # the Random Forest performs much better than the SGD
+    plt.plot(fpr, tpr, "b:", label="SGD")
+    plot_roc_curve(fpr_forest, tpr_forest, "Random Forest")
+    plt.legend(loc="lower right")
+    plt.show()
+    # On top of that, the Random Forest's ROC AUC is much better
+    print(f"RANDOMFORESTCLASSIFIER'S ROC AUC: {roc_auc_score(y_train_5, y_scores_forest)}")
+
 
 if __name__=="__main__":
     main()
