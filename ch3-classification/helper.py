@@ -12,3 +12,9 @@ def plot_roc_curve(fpr, tpr, label=None):
     # Therefore a good classifier stays as far from this line as possible
     plt.plot([0, 1], [0, 1], 'k--')
     # plt.show()
+
+def plot_digit(data):
+    image = data.reshape(28, 28)
+    plt.imshow(image, cmap = mpl.cm.binary,
+               interpolation="nearest")
+    plt.axis("off")

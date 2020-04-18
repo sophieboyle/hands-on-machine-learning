@@ -1,5 +1,5 @@
 from data import get, view_example
-from helper import plot_precision_recall_vs_threshold, plot_roc_curve
+from helper import plot_precision_recall_vs_threshold, plot_roc_curve, plot_digit
 import os
 import numpy as np
 from sklearn.linear_model import SGDClassifier
@@ -218,6 +218,28 @@ def main():
     # NOTE: If we want to change the computation of the F1 score to place
     # more weight upon instances which are more supported, 
     # we change average="weighted"
+
+    # Multioutput classification is when a label is not a boolean
+    # i.e. a label can have more than 2 values
+
+    # To indicate an example, we set up a system removing noise from images
+    # This outputs an array of pixel intensities
+    # The classifier's output has one label per pixel (multilabel)
+    # and also each label's value can range from 0-255 (multioutput)
+
+    # Add noise to the test and train sets, and set the original
+    # images to the labels (y's)
+    noise = np.random.randint(0, 100, (len(X_train)), 784)
+    X_train_mod = X_train + noise
+    noise = np.random.randint(0, 100, (len(X_train)), 784)
+    X_test_mod = X_test + noise
+    y_train_mod = X_train
+    y_test_mod = X_test
+
+    # Train the KNeighboursClassifier to clean the image
+    knn_clf.fit(X_train_mod, y_train_mod)
+    clean_digit = knn_clf.predict([X_test_mod[X[0]]])
+    plot_digit(clean_digit)
 
 if __name__=="__main__":
     main()
