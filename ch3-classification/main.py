@@ -9,6 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
@@ -194,6 +195,29 @@ def main():
     np.fill_diagonal(norm_conf_mx, 0)
     plt.matshow(norm_conf_mx, cmap=plt.cm.gray)
     plt.show()
+
+    # Multilabel classification is when an instance can belong
+    # to multiple classes
+    y_train_large = (y_train >= 7)
+    y_train_odd = (y_train % 2 == 1)
+    y_multilabel = np.c_[y_train_large, y_train_odd]
+
+    # We train a KNeighboursClassifier on the multilabel instances
+    knn_clf = KNeighborsClassifier()
+    knn_clf.fit(X_train, y_multilabel)
+
+    # A prediction on the KNeighboursClassifier will now output two labels
+    print(f"KNEIGHBOURS MULTILABEL PREDICTION: {knn_clf.predict([X[0]])}")
+
+    # To evaluate, we can compute the F1 score for each label,
+    # and compute the average
+    # NOTE: This metric assumes all labels are equally important
+    y_train_knn_pred = cross_val_predict(knn_clf, X_train, y_multilabel, cv=3)
+    knn_clf_f1_score = f1_score(y_multilabel, y_train_knn_pred, average="macro")
+    print(f"KNEIGHBOURS MULTILABEL F1 SCORE: {knn_clf_f1_score}")
+    # NOTE: If we want to change the computation of the F1 score to place
+    # more weight upon instances which are more supported, 
+    # we change average="weighted"
 
 if __name__=="__main__":
     main()
