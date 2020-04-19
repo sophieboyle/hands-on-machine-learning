@@ -2,6 +2,7 @@ from data import get
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_val_score, GridSearchCV
+from sklearn.metrics import accuracy_score
 
 def main():
     mnist = get()
@@ -28,7 +29,7 @@ def main():
 
     # Do a grid search for the best hyperparams
     param_grid = [
-        {"weights": ["uniform", "distance"], "n_neighbors":[2, 4, 6, 8]},
+        {"weights": ["uniform", "distance"], "n_neighbors":[2, 4, 6]},
     ]
     grid_search = GridSearchCV(knc, param_grid, scoring="neg_mean_squared_error",
                                 return_train_score=True)
@@ -38,8 +39,13 @@ def main():
     final_knc = grid_search.best_estimator_
 
     # Check the accuracy
-    score = cross_val_score(final_knc, X_train, y_train, cv=3, scoring="accuracy")
-    print(f"KNC ACCURACY: {score}")
+    # score = cross_val_score(final_knc, X_train, y_train, cv=3, scoring="accuracy")
+    # print(f"KNC VALIDATION ACCURACY: {score}")
+
+    # Grid search prediction using the best estimator
+    y_pred = grid_search.predict(X_test)
+    acc_score = accuracy_score(y_test, y_pred)
+
 
 if __name__ == "__main__":
     main()
