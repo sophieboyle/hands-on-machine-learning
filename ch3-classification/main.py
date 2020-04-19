@@ -88,7 +88,7 @@ def main():
     # We can now compute the precision and recall values for
     # all possible thresholds
     precisions, recalls, thresholds = precision_recall_curve(y_train_5, y_scores)
-    #plot_precision_recall_vs_threshold(precisions, recalls, thresholds)
+    plot_precision_recall_vs_threshold(precisions, recalls, thresholds)
 
     # We use the lowest threshold which gives 90% precision
     threshold_90_precision = thresholds[np.argmax(precisions >= 0.90)]
@@ -136,7 +136,7 @@ def main():
     plt.plot(fpr, tpr, "b:", label="SGD")
     plot_roc_curve(fpr_forest, tpr_forest, "Random Forest")
     plt.legend(loc="lower right")
-    #plt.show()
+    plt.show()
     # On top of that, the Random Forest's ROC AUC is much better
     print(f"RANDOMFORESTCLASSIFIER'S ROC AUC: {roc_auc_score(y_train_5, y_scores_forest)}")
 
@@ -185,7 +185,7 @@ def main():
     # classification. We can see which particular classes are correctly
     # classified less often if they are darker than the others. It may
     # also be the case that there are not enough of that class in the data
-    #plt.show()
+    plt.show()
 
     # To get a representation of error rates, we divide each of the
     # conf matrix's values by the number of instances in the class
@@ -194,7 +194,7 @@ def main():
     # Diagonal is filled with zeros to keep only errors
     np.fill_diagonal(norm_conf_mx, 0)
     plt.matshow(norm_conf_mx, cmap=plt.cm.gray)
-    #plt.show()
+    plt.show()
 
     # Multilabel classification is when an instance can belong
     # to multiple classes
