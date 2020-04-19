@@ -18,3 +18,4 @@ def plot_digit(data):
     plt.imshow(image, cmap = mpl.cm.binary,
                interpolation="nearest")
     plt.axis("off")
+    plt.show()
