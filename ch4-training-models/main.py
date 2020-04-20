@@ -1,6 +1,6 @@
-from closed_form_sol import *
-from lin_reg import *
-from grad_descent import *
+from lin_reg.closed_form_sol import *
+from lin_reg.lin_reg import *
+from lin_reg.grad_descent import *
 
 def main():
     X, y = gen_lin_data()
