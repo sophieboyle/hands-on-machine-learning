@@ -1,4 +1,4 @@
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, SGDRegressor
 import numpy as np
 
 
@@ -39,3 +39,16 @@ def lin_reg_manual_best_theta(X, y):
     # NOTE: The pseudoinverse is calculated using Singular Value
     # Decomposition. This is more efficient than the normal equation.
     return theta
+
+
+"""
+    @brief Perform a linear regression using stochastic
+    descent.
+    @param X array of data (without x0=1 added)
+    @param y array of labels
+"""
+def reg_with_stoch_desc(X, y):
+    sgd_reg = SGDRegressor(max_iter=1000, tol=1e-3, penalty=None, eta0=0.1)
+    sgd_reg.fit(X, y.ravel())
+    print(f"Intercept: {sgd_reg.intercept_}")
+    print(f"Coef: {sgd_reg.coef_}")
