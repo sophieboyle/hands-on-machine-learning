@@ -50,7 +50,8 @@ def predict_using_theta(theta, X_b):
     on example data.
     @param Best model parameter
     @return Prediction
-    @return X_b New data to fit
+    @return X data array
+    @return X_b Data with x0 included
 """
 def ex_predict_using_theta(theta):
     # New matrice: 2 rows, 1 col
