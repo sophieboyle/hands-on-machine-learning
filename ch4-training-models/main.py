@@ -1,8 +1,10 @@
 from lin_reg.closed_form_sol import *
 from lin_reg.lin_reg import *
 from lin_reg.grad_descent import *
+from polynomial_reg.polynomial_reg import *
 
-def main():
+
+def test_lin_reg():
     X, y = gen_lin_data()
     theta = compute_best_model_param(X, y)
 
@@ -18,6 +20,21 @@ def main():
     print(f"STOCHASTIC GRAD DESC. HYPERPARAMS: {stoch_grad_desc_hyp}")
 
     reg_with_stoch_desc(X, y)
+
+
+def test_poly_reg():
+    X, y, m = gen_quadratic_data()
+    X_poly, poly_features = add_poly_features(X)
+
+    X_new, X_new_poly = gen_new_X_data_for_pred(poly_features)
+
+    y_pred = fit_lin_reg_on_poly_data(X_poly, y, X_new_poly)
+
+    plot_poly_pred(X, y, X_new, y_pred)
+
+def main():
+    test_poly_reg()
+
 
 if __name__=="__main__":
     main()
