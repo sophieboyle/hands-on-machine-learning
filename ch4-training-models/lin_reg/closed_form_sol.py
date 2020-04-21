@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
     the normal function.
 """
 def gen_lin_data():
+    np.random.seed(42)
     # Random floats used for noise
     X = 2 * np.random.rand(100, 1)
     y = 4 + 3 * X + np.random.randn(100, 1)
