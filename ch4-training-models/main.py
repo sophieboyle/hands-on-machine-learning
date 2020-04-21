@@ -4,6 +4,7 @@ from lin_reg.grad_descent import *
 from polynomial_reg.polynomial_reg import *
 from polynomial_reg.learning_curve import *
 from regularisation.ridge_reg import *
+from regularisation.lasso_reg import *
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 
@@ -54,6 +55,12 @@ def test_regularisation():
 
     sgd_reg = do_ridge_reg_using_sgd(X, y)
     print(sgd_reg.predict([[1.5]]))
+
+    lasso_reg = do_lasso_reg(X, y)
+    print(lasso_reg.predict([[1.5]]))
+
+    sgd_lasso_reg = do_lasso_reg_with_sgd(X, y)
+    print(sgd_lasso_reg.predict([[1.5]]))
 
 
 def main():
