@@ -32,8 +32,8 @@ def gen_and_split_data(m):
 """
 def prep_data(X_train, X_val):
     poly_scaler = Pipeline([
-        ("poly_features", PolynomialFeatures(degree=90, include_bias=False),
-        ("std_scaler", StandardScaler()))
+        ("poly_features", PolynomialFeatures(degree=90, include_bias=False)),
+        ("std_scaler", StandardScaler())
     ])
     return poly_scaler.fit_transform(X_train), poly_scaler.fit(X_val)
 

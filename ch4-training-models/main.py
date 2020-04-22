@@ -69,7 +69,9 @@ def test_regularisation():
 
     X_train, X_val, y_train, y_val = gen_and_split_data(100)
     X_train_poly_scaled, X_val_poly_scaled = prep_data(X_train, X_val)
-
+    sgdr_es = early_stopping_sgdr(X_train, X_val, y_train, y_val)
+    
+    
 
 def main():
     test_regularisation()
