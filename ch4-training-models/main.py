@@ -6,6 +6,7 @@ from polynomial_reg.learning_curve import *
 from regularisation.ridge_reg import *
 from regularisation.lasso_reg import *
 from regularisation.elastic_net import *
+from regularisation.early_stopping import *
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 
@@ -65,6 +66,9 @@ def test_regularisation():
 
     elastic_net = do_elastic_net(X, y, 0.5)
     print(elastic_net.predict([[1.5]]))
+
+    X_train, X_val, y_train, y_val = gen_and_split_data(100)
+    X_train_poly_scaled, X_val_poly_scaled = prep_data(X_train, X_val)
 
 
 def main():
