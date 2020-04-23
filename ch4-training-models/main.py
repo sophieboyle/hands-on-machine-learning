@@ -7,6 +7,7 @@ from regularisation.ridge_reg import *
 from regularisation.lasso_reg import *
 from regularisation.elastic_net import *
 from regularisation.early_stopping import *
+from logistic_reg.iris import *
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 
@@ -74,7 +75,7 @@ def test_regularisation():
     
 
 def main():
-    test_regularisation()
+    iris_main()
 
 
 if __name__=="__main__":
