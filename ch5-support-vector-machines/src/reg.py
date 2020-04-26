@@ -1,4 +1,4 @@
-from sklearn.svm import LinearSVR
+from sklearn.svm import LinearSVR, SVR
 
 """
     @brief SVM can be used for regression as well.
@@ -19,3 +19,15 @@ def fit_svm_reg(X, y):
     svm_reg = LinearSVR(epsilon=1.5)
     svm_reg.fit(X, y)
     return svm_reg
+
+
+"""
+    @brief SVM regression may also be used with polynomial
+    features using a kernel trick.
+    @param X matrice of feature values.
+    @param y array of labels.
+    @return Fitted SVM Regression model with polynomial features.
+"""
+def fit_poly_svm_reg(X, y):
+    svm_poly_reg = SVR(kernel="poly", degree=2, C=100, epsilon=0.1)
+    svm_poly_reg.fit(X, y)
