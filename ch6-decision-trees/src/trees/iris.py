@@ -48,3 +48,9 @@ if __name__ == "__main__":
     X, y, iris = get_iris()
     tree_clf = fit_tree_clf(X, y)
     visualise(tree_clf, iris)
+    # Return the probabilities for an iris with petal
+    # length 5cm and width 1.5cm
+    print(tree_clf.predict_proba([[5, 1.5]]))
+    # The highest probability is at index 1 of the array
+    # i.e. the iris versicolour class.
+    print(tree_clf.predict([[5, 1.5]]))
