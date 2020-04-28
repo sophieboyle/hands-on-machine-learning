@@ -1,6 +1,7 @@
 from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
 
 
 """
@@ -43,9 +44,26 @@ def find_best_param(X_train, y_train):
     @return The fitted DecisionTreeClassifier model.
 """
 def train_best(X_train, y_train, max_leaf_nodes):
-    pass
+    tree_clf = DecisionTreeClassifier(max_leaf_nodes=max_leaf_nodes)
+    tree_clf.fit(X_train, y_train)
+    return tree_clf
+
+
+"""
+    @brief Test the given model on given testing data.
+    @param X_test Matrice of feature values for testing.
+    @param y_test Array of labels for testing.
+    @param tree_clf Fitted DecisionTreeClassifier to test.
+    @return Accuracy score.
+"""
+def test_model(X_test, y_test, tree_clf):
+    y_pred = tree_clf.predict(X_test)
+    return accuracy_score(y_test, y_pred)
 
 
 if __name__ == "__main__":
     X_train, X_test, y_train, y_test = get_data()
     best_params = find_best_param(X_train, y_train)
+    tree_clf = train_best(X_train, y_train, best_params["max_leaf_nodes"])
+    acc_score = test_model(X_test, y_test, tree_clf)
+    print(acc_score)
