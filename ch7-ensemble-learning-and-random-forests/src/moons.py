@@ -22,7 +22,7 @@ def get_data():
 
 """
     @brief Train an ensemble voting classifier based on
-    three distinctive classifiers.
+    three distinctive classifiers using hard voting.
     @param X_train matrice of feature values.
     @param y_train array of labels.
     @return List containing: Fitted Voting Classifier,
@@ -41,6 +41,35 @@ def train_ensemble(X_train, y_train):
     voting_clf = VotingClassifier(
         estimators=[("lr", log_clf), ("rf", rnd_clf), ("svc", svm_clf)],
         voting="hard"
+    )
+    voting_clf.fit(X_train, y_train)
+    
+    return [voting_clf, log_clf, rnd_clf, svm_clf]
+
+
+"""
+    @brief Train an ensemble voting classifier based on
+    three distinctive classifiers using soft voting.
+    @param X_train matrice of feature values.
+    @param y_train array of labels.
+    @return List containing: Fitted Voting Classifier,
+    LogisticRegressionClassifier, RandomForestClassifier
+    and SupportVectorClassifier.
+"""
+def train_ensemble_soft(X_train, y_train):
+    log_clf = LogisticRegression()
+    rnd_clf = RandomForestClassifier()
+    # For soft voting, SVC should have a predict_proba method
+    # This will unfortunately slow down training.
+    svm_clf = SVC(probability=True)
+
+    # voting="soft" means the predicted class is chosen based on
+    # the class with the highest indicated probability, which is
+    # averaged across all classifiers. NOTE: Requires all classifiers
+    # to have a predict_proba method.
+    voting_clf = VotingClassifier(
+        estimators=[("lr", log_clf), ("rf", rnd_clf), ("svc", svm_clf)],
+        voting="soft"
     )
     voting_clf.fit(X_train, y_train)
     
@@ -68,7 +97,8 @@ def check_accuracies(X_train, y_train, X_test, y_test, classifiers):
 
 if __name__=="__main__":
     X_train, X_test, y_train, y_test = get_data()
-    classifiers = train_ensemble(X_train, y_train)
+    # classifiers = train_ensemble(X_train, y_train)
+    classifiers = train_ensemble_soft(X_train, y_train)
     accuracies = check_accuracies(X_train, y_train, X_test, y_test, classifiers)
     for accuracy in accuracies.keys():
         print(str(accuracy) + ": " + str(accuracies[accuracy]))
