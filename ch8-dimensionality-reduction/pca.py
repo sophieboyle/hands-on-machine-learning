@@ -57,9 +57,11 @@ def find_dimensions(X):
 
     NOTE: This is a manual approach, instead it is possible
     to simply perform PCA(n_components=0.95) to indicate the
-    ratio of variance to conserve. You can also change
-    svd_solver param to "full" to perform full SVD instead
-    of the default "auto" which uses randomised SVD.
+    ratio of variance to conserve.
+    
+    You can also change svd_solver param to "full" to perform 
+    full SVD instead of the default "auto" which uses 
+    randomised SVD.
 
     Arguments:
         X {nparray} -- Dataset to investigate.
