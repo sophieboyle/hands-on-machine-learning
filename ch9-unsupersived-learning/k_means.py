@@ -1,5 +1,6 @@
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, MiniBatchKMeans
 from sklearn.datasets import make_blobs
+from sklearn.metrics import silhouette_score
 import numpy as np
 
 
@@ -14,6 +15,8 @@ def train_k_means(k, X):
     badly on clusters with varying diameter.
     
     NOTE: The number of clusters to be found must be specified.
+    The data must also be scaled before using any K-Means alg,
+    as otherwise, clusters may be stretched.
 
     Arguments:
         k {int} -- Number of clusters to find.
@@ -28,9 +31,31 @@ def train_k_means(k, X):
     return y_pred, kmeans
 
 
+def train_mini_batch_k_means(k, X):
+    """Trains a variant of the K-Means algorithm, which 
+    trains on mini-batches of the full dataset upon each
+    iteration.
+    
+    NOTE: This is faster and useful if a huge dataset cannot
+    fit in memory. However, the intertia is slightly worse,
+    and grows with the number of clusters.
+
+    Arguments:
+        k {int} -- Number of clusters
+        X {nparray} -- Dataset
+
+    Returns:
+        MiniBatchKMeans -- A fitted mini-batch k-means alg.
+    """
+    minibatch_kmeans = MiniBatchKMeans(n_clusters=k)
+    minibatch_kmeans.fit(X)
+    return minibatch_kmeans
+
+
 def gen_blobs():
     """Generates data which appears in the form of blobs
     to be used as an example for k-means clustering.
+
     NOTE: The values in the y array represent the index of
     the cluster an index is to be found in. (They are NOT labels
     in the classification sense.)
@@ -86,3 +111,18 @@ if __name__ == "__main__":
     print(kmeans.inertia)
     # Score returns negative intertia
     print(kmeans.score(X))
+
+    # The silhouette score is the mean silhouette coefficient of
+    # all instances, which is (b-a)/max(a,b), where a is the
+    # intra-cluster distance and b is the mean nearest-cluster dist.
+    # The silhouette coeff. ranges between -1 and +1, where:
+    # +1 indicates an instance is well within its own cluster
+    # -1 indicates an instance may have been allocated to the wrong cluster
+    print(silhouette_score(X, kmeans.labels_))
+
+    # NOTE: Silhouette score is much better when determining how
+    # many clusters to allocate to an algorithm, as generally
+    # the inertia will decrease with the number of clusters anyway,
+    # but this may not actually result in the desired effect.
+    # Silhouette score however is much more detailed in identifying
+    # how instances relate to their (and other) clusters as a metric.  
