@@ -7,7 +7,8 @@ from sklearn.pipeline import Pipeline
 
 def parse_digits():
     X_digits, y_digits = load_digits(return_X_y=True)
-    X_train, X_test, y_train, y_test = train_test_split(X_digits, y_digits)
+    X_train, X_test, y_train, y_test = train_test_split(X_digits, y_digits,
+                                        random_state=42)
     return X_train, X_test, y_train, y_test
 
 
