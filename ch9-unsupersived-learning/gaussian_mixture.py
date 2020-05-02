@@ -1,4 +1,4 @@
-from sklearn.mixture import GaussianMixture
+from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
 from sklearn.datasets import make_blobs
 import numpy as np
 
@@ -56,3 +56,18 @@ if __name__ == "__main__":
     densities = gm.score_samples(X)
     density_threshold = np.percentile(densities, 4)
     anomalies = X[densities < density_threshold]
+
+    # To measure the appropriate number of clusters to use
+    # we can use theoretical information criterion BIC and AIC
+    # Both use the maximised value of the likelihood function.
+    # Select the model with the lowest BIC/AIC 
+    print(gm.bic(X))
+    print(gm.aic(X))
+
+    # BayesianGaussianMixture gives a weight of 0 to unnecessary
+    # clusters, therefore automatically detecting how many clusters
+    # are actually needed.  
+    bgm = BayesianGaussianMixture(n_components=10, n_init=10)
+    bgm.fit(X)
+    # The alg. shows that only 3 out of the 10 clusters are required.
+    print(np.round(bgm.weights_, 2))
