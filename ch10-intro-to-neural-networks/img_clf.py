@@ -1,5 +1,8 @@
 import tensorflow as tf
 from tensorflow import keras
+import pandas as pd
+import matplotlib.pyplot as plt
+
 
 def get_fashion():
     fashion_mnist = keras.datasets.fashion_mnist
@@ -11,6 +14,14 @@ def get_fashion():
     y_val = y_train_full[:5000]
     y_train = y_train_full[5000:]
     return X_train, X_val, X_test, y_train, y_val, y_test
+
+
+def plot_history(hist):
+    pd.DataFrame(hist).plot(figsize=(8, 5))
+    plt.grid(True)
+    plt.gca().set_ylim(0, 1)
+    plt.show()
+
 
 if __name__ == "__main__":
     X_train, X_val, X_test, y_train, y_val, y_test = get_fashion()
@@ -52,6 +63,15 @@ if __name__ == "__main__":
     # Compile to specify loss function and optimiser
     # NOTE: Spare categorical crossentropy is used because the
     # labels are sparse and exclusive. Stochastic Gradient Descent
-    # is specified to use backpropagation.
+    # is specified to use backpropagation. (Uses default learning rate)
     model.compile(loss="sparse_categorical_crossentropy",
                     optimizer="sgd", metrics=["accuracy"])
+
+    # Training the model
+    history = model.fit(X_train, y_train, epochs=30, 
+                        validation_data=(X_val, y_val))
+
+    # History now stores data regarding training parameters,
+    # the list of epochs, and the loss and other metrics measured
+    # at the end of each epoch.
+    plot_history(history.history)
