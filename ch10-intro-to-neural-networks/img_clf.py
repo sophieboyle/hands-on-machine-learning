@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def get_fashion():
@@ -75,3 +76,15 @@ if __name__ == "__main__":
     # the list of epochs, and the loss and other metrics measured
     # at the end of each epoch.
     plot_history(history.history)
+
+    # Evaluating on test set
+    print(model.evaluate(X_test, y_test))
+
+    # Predictions can be made on new instances
+    X_new = X_test[:3]
+    y_proba = model.predict(X_new)
+    print(y_proba.round(2))
+
+    # To predict the class with the highest probability
+    y_pred = model.predict_classes(X_new)
+    print(np.array(class_names)[y_pred])
