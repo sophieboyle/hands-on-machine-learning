@@ -35,3 +35,7 @@ if __name__ == "__main__":
 
     y_pred = per_clf.predict([[2, 0.5]])
     print(y_pred)
+
+    # The Perceptron cannot solve simple issues such as XOR
+    # This is solved with stacking Perceptrons in an architecture
+    # known as Multilayer Perceptron (MLP).  
