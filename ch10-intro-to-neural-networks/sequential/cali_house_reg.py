@@ -12,10 +12,11 @@ def get_housing():
 
     # Divide up datasets
     X_train_full, X_test, y_train_full, y_test = train_test_split(
-                                        housing.data, housing.target
-                                        )
+                                        housing.data, housing.target,
+                                        random_state=42)
     X_train, X_val, y_train, y_val = train_test_split(X_train_full,
-                                                    y_train_full)
+                                                    y_train_full,
+                                                    random_state=42)
 
     # Scale the data
     scaler = StandardScaler()
