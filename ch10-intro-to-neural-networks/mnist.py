@@ -6,6 +6,13 @@ import matplotlib.pyplot as plt
 
 
 class GrowLearningRateCallback(keras.callbacks.Callback):
+    """Stores information
+        regarding the learning rate and loss at each batch, whilst
+        increasing the learning rate according to a given factor.
+
+    Arguments:
+        keras {Callback} -- Callback class
+    """
     def __init__(self, factor):
         self.factor = factor
         self.loss = []
@@ -24,6 +31,21 @@ def get_mnist():
     y_val, y_train = y_train_full[:5000], y_train_full[5000:]
     X_test = X_test / 225.0
     return X_train, X_val, X_test, y_train, y_val, y_test
+
+
+def plot_lr_loss(grow_lr_cb):
+    """Plot the learning rates against losses stored
+    in the GrowLearningRateCallback object.
+
+    Arguments:
+        grow_lr_cb {GrowLearningRateCallback} -- 
+    """
+    plt.plot(grow_lr_cb.lrs, grow_lr_cb.loss)
+    plt.gca().set_xscale('log')
+    plt.axis([min(grow_lr_cb.lrs), max(grow_lr_cb.lrs), 0, grow_lr_cb.loss[0]])
+    plt.xlabel("Learning rate")
+    plt.ylabel("Loss")
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -63,3 +85,27 @@ if __name__ == "__main__":
                         callbacks=[grow_lr_cb])
 
     # Plot learning growth vs loss
+    plot_lr_loss(grow_lr_cb)
+
+    # NOTE: Plot shows that loss seems to spike at 3e-1,
+    # therefore, try a model with lr 2e-2
+
+    keras.backend.clear_session()
+
+    model = keras.models.Sequential([
+        keras.layers.Flatten(input_shape=(28, 28)),
+        keras.layers.Dense(300, activation="relu"),
+        keras.layers.Dense(300, activation="relu"),
+        keras.layers.Dense(10, activation="softmax")
+    ])
+
+    model.compile(loss="sparse_categorical_crossentropy",
+                    optimizer=keras.optimizers.SGD(lr=2e-1), 
+                    metrics=["accuracy"])
+    
+    history = model.fit(X_train, y_train, epochs=100,
+                        validation_data=(X_val, y_val),
+                        callbacks=[checkpoint_cb, early_stopping_cb])
+    
+    model = keras.models.load_model("mnist_mlp.h5")
+    print(model.evaluate(X_test, y_test))
