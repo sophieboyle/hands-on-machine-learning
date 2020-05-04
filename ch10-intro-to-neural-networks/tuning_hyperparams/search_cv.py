@@ -64,3 +64,24 @@ if __name__ == "__main__":
     y_pred = keras_reg.predict(X_new)
     print(y_pred)
 
+    # Doing a randomised search on hyperparams (as there are many)
+    param_distribs = {
+        "n_hidden": [0, 1, 2, 3],
+        "n_neurons": np.arange(1, 100),
+        "learning_rate": reciprocal(3e-4, 3e-2)
+    }
+
+    # Uses k-fold validation (i.e. not touching validation sets)
+    rnd_search_cv = RandomizedSearchCV(keras_reg, param_distribs,
+                                        n_iter=10, cv=3)
+
+    # Uses the validation sets for early stopping only
+    rnd_search_cv.fit(X_train, y_train, epochs=100, 
+                        validation_data=(X_val, y_val),
+                        callbacks=[keras.callbacks.EarlyStopping(patience=10)])
+    
+    print(f" Best params: {rnd_search_cv.best_params_}")
+    print(f"Best params: {rnd_search_cv.best_score_}")
+    
+    # Selecting the best model
+    model = rnd_search_cv.best_estimator_.model
