@@ -7,3 +7,6 @@ datasets/
 
 # Excludes log files
 logs/
+
+# Excludes saved model files
+*.h5
