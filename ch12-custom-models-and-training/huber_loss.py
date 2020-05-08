@@ -67,3 +67,43 @@ class HuberLoss(keras.losses.Loss):
     def get_config(self):
         base_config = super().get_config()
         return {**base_config, "threshold": self.threshold}
+
+
+class HuberMetric(keras.metrics.Metric):
+    """Huber Loss as a streaming metric (one which is gradually
+    updated upon each batch.) Streaming metrics are useful for
+    metrics which cannot simply be computed over the mean.
+    NOTE: This is not the case for Huber Loss, this is simply
+    an example.
+
+    Arguments:
+        keras {Metric} -- keras.metrics.Metric
+    """
+    def __init__(self, threshold=1.0, **kwargs):
+        super().__init__(**kwargs)
+        self.threshold = threshold
+        self.huber_fn = create_huber(threshold)
+
+        # Tracks metric's state over batches
+        # Sum of all huber losses
+        self.total = self.add_weight("total", initializer="zeros")
+        # All instances seen thus-far
+        self.count = self.add_weight("count", initializer="zeros")
+    
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        # Called when object is called as function.
+        # Computes metric
+        metric = self.huber_fn(y_true, y_pred)
+        # Appends to the total huber losses
+        self.total.assign_add(tf.reduce_sum(metric))
+        # Adds the batch of instances to the count
+        self.count.assign_add(tf.cast(tf.size(y_true), tf.float32))
+    
+    def result(self):
+        # Computes final metric result: huber metric across all instances
+        return self.total / self.count
+
+    def get_config(self):
+        # Ensures threshold is saved when saving a model
+        base_config = super().get_config()
+        return {**base_config, "threshold": self.threshold}
