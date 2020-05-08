@@ -35,3 +35,18 @@ class CustDense(keras.layers.Layers):
         # saved using serialize
         return {**base_config, "units": self.units,
                 "activation": keras.activations.serialize(self.activation)}
+
+
+class CustMultiLayers(keras.layers.Layer):
+    def call(self, X):
+        # Multi-input: X is a tuple of inputs
+        X1, X2 = X
+        # Multi-outputs: return list from call()
+        return [X1 + X2, X1 * X2, X1 / X2]
+    
+    def compute_output_shape(self, batch_input_shape):
+        # Multi-inpt: batch_input_shape is a tuple containing all
+        # input batch shapes. 
+        b1, b2 = batch_input_shape
+        # Multi-ouptut: list of batch output shapes
+        return [b1, b1, b1]
