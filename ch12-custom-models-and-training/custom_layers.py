@@ -50,3 +50,21 @@ class CustMultiLayers(keras.layers.Layer):
         b1, b2 = batch_input_shape
         # Multi-ouptut: list of batch output shapes
         return [b1, b1, b1]
+
+
+class CustGaussianNoise(keras.layers.Layer):
+    def __init__(self, stddev, **kwargs):
+        super().__init__(**kwargs)
+        self.stddev = stddev
+    
+    def call(self, X, training=None):
+        # Allows for different behaviour during training and testing
+        # Here, Gaussian Noise is added to data during training only
+        if training:
+            noise = tf.random.normal(tf.shape(X), stddev=self.stddev)
+            return X + noise
+        else:
+            return X
+    
+    def compute_output_shape(self, batch_input_shape):
+        return batch_input_shape
