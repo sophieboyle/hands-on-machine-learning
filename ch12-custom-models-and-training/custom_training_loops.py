@@ -21,6 +21,14 @@ def random_batch(X, y, batch_size=32):
     return X[idx], y[idx]
 
 
+def print_status_bar(iteration, total, loss, metrics=None):
+    # Outputs status bar
+    metrics = " - ".join(["{}: {:.4f}".format(m.name, m.result)
+                    for m in [loss] + (metrics or [])])
+    end = "" if iteration < total else "\n"
+    print("\r{}/{} -".format(iteration, total) + metrics, end=end)
+
+
 if __name__ == "__main__":
     # Building a simple model
     l2_reg = keras.regularizers.l2(0.05)
