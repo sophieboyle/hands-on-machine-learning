@@ -44,6 +44,10 @@ def get_housing():
 if __name__ == "__main__":
     # Get data
     X_train, X_val, X_test, y_train, y_val, y_test = get_housing()
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_valid_scaled = scaler.transform(X_val)
+    X_test_scaled = scaler.transform(X_test)
 
     # Building a simple model
     l2_reg = keras.regularizers.l2(0.05)
@@ -61,3 +65,33 @@ if __name__ == "__main__":
     loss_fn = keras.losses.mean_squared_error
     mean_loss = keras.metrics.Mean()
     metrics = [keras.metrics.MeanAbsoluteError()]
+
+    # Custom training loop
+    for epoch in range(1, n_epochs + 1):
+        print(f"Epoch {epoch}/{n_epochs}")
+
+        # Goes over each batch in the epoch
+        for step in range(1, n_steps):
+            # Sample batch from training set
+            X_batch, y_batch = random_batch(X_train_scaled, y_train)
+
+            with tf.GradientTape() as tape:
+                # Make predictions and compute the loss over the batch
+                y_pred = model(X_batch, training=True)
+                main_loss = tf.reduce_mean(loss_fn(y_batch, y_pred))
+                loss = tf.add_n([main_loss] + model.losses)
+            
+            # Compute gradient of loss in regards to all trainable vars
+            # and apply them to optimizer 
+            gradients = tape.gradient(loss, model.trainable_variables)
+            optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+            
+            # Update mean loss and metrics
+            mean_loss(loss)
+            for metric in metrics:
+                metric(y_batch, y_pred)
+            print_status_bar(step * batch_size, len(y_train), mean_loss, metrics)
+            
+            # Reset states
+            for metric in [mean_loss] + metrics:
+                metric.reset_states()
